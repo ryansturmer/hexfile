@@ -1,0 +1,7 @@
+*.pyc
+*.pyd
+*.pyo
+*.hex
+*~
+*.bak
+*.tmp
