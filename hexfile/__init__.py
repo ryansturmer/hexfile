@@ -1,4 +1,4 @@
-__title__ = 'tableview'
+__title__ = 'hexfile'
 __version__ = '0.0.1'
 __author__ = 'Ryan Sturmer'
 __license__ = 'MIT'
