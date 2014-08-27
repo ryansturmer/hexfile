@@ -17,7 +17,14 @@ class HexFile(object):
             if address in segment:
                 return segment[val]
 
-        raise IndexError('No segment contains 0x%x' % address)
+        raise IndexError('No segment contains address 0x%x' % address)
+
+    def __len__(self):
+        return sum(map(len, self.segments))
+
+    @property
+    def size(self):
+        return len(self)
 
     def __iter__(self):
         return itertools.chain(*self.segments)
@@ -116,6 +123,9 @@ class Segment(object):
     @property
     def addresses(self):
         return range(self.start_address, self.end_address)
+
+    def __len__(self):
+        return len(self.data)
 
     def __iter__(self):
         return iter(zip(self.addresses, self.data))
