@@ -20,7 +20,7 @@ f = hexfile.load('memory.hex')
 The `HexFile` object is composed of one or more memory segments, which may be discontinuous.  You can access the contents of the hex file as though it were an array of bytes:
 
 ```python
-print size(f)      # Total number of bytes in the hexfile (NOT the total span of all addresses)
+print f.size       # Total number of bytes in the hexfile (NOT the total span of all addresses)
 
 byte = f[16]       # Returns the byte at address 16 (as an int)
 
