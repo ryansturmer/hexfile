@@ -36,7 +36,7 @@ class HexFile(object):
         with open(filename) as fp:
             lines = fp.readlines()
 
-        extended_segment_address = 0
+        extended_linear_address = 0
         current_address = 0
         end_of_file = False
 
@@ -63,7 +63,6 @@ class HexFile(object):
 
             if record_type == 0:
                 if byte_count == len(data):
-                    #print "Data@0x%08x: %s" % (address | extended_linear_address, data)
                     current_address = (address | extended_linear_address)
                     have_segment = False
                     for segment in segments:
@@ -83,8 +82,16 @@ class HexFile(object):
                 extended_linear_address = short(*data) << 16
 
             else:
-                print "Unknown record type: %s" % record_type 
+                raise Exception("Unknown record type: %s" % record_type) 
         return HexFile(segments)
+
+    def pretty_string(self, stride=16):
+        retval = []
+        for segment in self.segments:
+            retval.append('Segment @ 0x%08x (%d bytes)' % (segment.start_address, segment.size))
+            retval.append(segment.pretty_string(stride=stride))
+            retval.append('')
+        return '\n'.join(retval)
 
 def load(filename):
     return HexFile.load(filename)
@@ -93,6 +100,14 @@ class Segment(object):
     def __init__(self, start_address, data = None):
         self.start_address = start_address
         self.data = data or []
+
+    def pretty_string(self, stride=16):
+        retval = []
+        addresses = self.addresses
+        ranges = [addresses[i:i+stride] for i in range(0, self.size, stride)] 
+        for r in ranges:
+            retval.append('%08x ' % r[0] + ' '.join(['%02x' % self[addr] for addr in r]))
+        return '\n'.join(retval)
 
     def __str__(self):
         return '<%d byte segment @ 0x%08x>' % (self.size, self.start_address)
@@ -115,11 +130,14 @@ class Segment(object):
             if address.start not in self or address.stop-1 not in self:
                 raise IndexError('Address out of range for this segment')
             else:
-                return self.data[address.start-self.start_address:address.stop-self.start_address:address.step]
+                d = self.data[address.start-self.start_address:address.stop-self.start_address:address.step]
+                start_address = address.start + self.start_address
+                return Segment(start_address, d)
         else:
             if not address in self:
                 raise IndexError("Address 0x%x is not in this segment" % address)
             return self.data[address-self.start_address]
+    
     @property
     def addresses(self):
         return range(self.start_address, self.end_address)
@@ -128,4 +146,4 @@ class Segment(object):
         return len(self.data)
 
     def __iter__(self):
-        return iter(zip(self.addresses, self.data))
+        return iter(self.data)
