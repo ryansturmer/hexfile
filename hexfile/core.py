@@ -174,4 +174,4 @@ class Segment(object):
         return len(self.data)
 
     def __iter__(self):
-        return iter(self.data)
+        return iter(zip(self.addresses,self.data))
