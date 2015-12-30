@@ -5,4 +5,4 @@ __license__ = 'MIT'
 __copyright__ = 'Copyright 2014 Ryan Sturmer'
 __docformat__ = 'restructuredtext'
 
-from core import load, HexFile, Segment
+from .core import load, HexFile, Segment
